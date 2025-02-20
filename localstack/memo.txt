@@ -1,0 +1,24 @@
+# TODO: スクリプト化 -> Terraformに移行
+
+# コンテナ内で操作
+docker exec -it localstack-main /bin/sh
+
+# S3バケットの作成
+awslocal s3 mb s3://static-page
+
+# バケットポリシーの設定
+awslocal s3api put-bucket-policy --bucket static-page --policy '{ "Version": "2012-10-17", "Statement": [{"Effect": "Allow","Principal": "*","Action": "s3:GetObject","Resource": "arn:aws:s3:::static-page/*"}]}'
+
+# /client で資材をdistに作成
+yarn build
+
+# ホストからアップロード
+aws --endpoint-url=http://localhost:4566 s3 sync dist/ s3://static-page --delete
+
+# 中身確認
+awslocal s3 ls s3://static-page --recursive
+
+# サイトホスティング
+awslocal s3 website s3://static-page --index-document index.html
+
+http://localhost:4566/static-page/index.html

@@ -8,6 +8,9 @@ services:
     environment:
       # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
       - DEBUG=${DEBUG:-0}
+      - SERVICES=s3
+      - DEFAULT_REGION=ap-northeast-1 
+      - EDGE_PORT=4566
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
